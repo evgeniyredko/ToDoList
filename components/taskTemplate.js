@@ -1,6 +1,8 @@
 export function createTaskElement(task, index) {
   const li = document.createElement("li");
   li.className = task.done ? "done" : "";
+  li.setAttribute("draggable", "true");
+  li.dataset.index = index;
 
   li.innerHTML = `
     <label class="checkbox-wrapper">

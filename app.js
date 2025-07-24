@@ -66,16 +66,108 @@ function renderTasks() {
   });
 }
 
+let draggedIndex = null;
+
+// начало перетаскивания
+list.addEventListener("dragstart", (e) => {
+  draggedIndex = e.target.dataset.index;
+  e.dataTransfer.effectAllowed = "move";
+  e.target.classList.add("dragging"); // 🔹 добавляет визуальный стиль
+});
+
+// разрешаем перетаскивание
+list.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+
+list.addEventListener("dragend", (e) => {
+  e.target.classList.remove("dragging"); // 🔹 возвращает стиль
+});
+
+// на какой элемент перетащили
+list.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const targetIndex = e.target.closest("li")?.dataset.index;
+
+  if (
+    draggedIndex !== null &&
+    targetIndex !== undefined &&
+    draggedIndex !== targetIndex
+  ) {
+    const tasks = tasksByCategory[currentCategory];
+    const movedItem = tasks.splice(draggedIndex, 1)[0];
+    tasks.splice(targetIndex, 0, movedItem);
+
+    saveTasks(tasksByCategory);
+    renderTasks();
+  }
+
+  draggedIndex = null;
+});
+
 function renderCategories() {
   categoryList.innerHTML = "";
-  for (const category in tasksByCategory) {
+
+  Object.keys(tasksByCategory).forEach((category, index) => {
     const li = document.createElement("li");
     li.textContent = category;
     li.dataset.category = category;
+    li.dataset.index = index;
+    li.setAttribute("draggable", "true");
     li.className = category === currentCategory ? "active" : "";
     categoryList.appendChild(li);
-  }
+  });
 }
+
+let draggedCategoryIndex = null;
+
+// dragstart
+categoryList.addEventListener("dragstart", (e) => {
+  draggedCategoryIndex = e.target.dataset.index;
+  e.target.classList.add("dragging");
+});
+
+// dragend
+categoryList.addEventListener("dragend", (e) => {
+  e.target.classList.remove("dragging");
+});
+
+// dragover
+categoryList.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+
+// drop
+categoryList.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const target = e.target.closest("li");
+  const targetIndex = target?.dataset.index;
+
+  if (
+    draggedCategoryIndex !== null &&
+    targetIndex !== undefined &&
+    draggedCategoryIndex !== targetIndex
+  ) {
+    const keys = Object.keys(tasksByCategory);
+    const draggedKey = keys[draggedCategoryIndex];
+
+    // перемещаем ключ в массиве
+    keys.splice(draggedCategoryIndex, 1);
+    keys.splice(targetIndex, 0, draggedKey);
+
+    // создаём новый объект с обновлённым порядком
+    const newTasksByCategory = {};
+    keys.forEach((key) => {
+      newTasksByCategory[key] = tasksByCategory[key];
+    });
+
+    tasksByCategory = newTasksByCategory;
+    saveTasks(tasksByCategory);
+    renderCategories();
+  }
+
+  draggedCategoryIndex = null;
+});
 
 // --- Модальное создание новой категории ---
 const modalCreate = document.getElementById("modal-create");

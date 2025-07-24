@@ -86,6 +86,18 @@ li.done {
   color: #888;
 }
 
+li:not(.dragging):hover {
+  background-color: #1e1e1e;
+}
+
+li.dragging {
+  opacity: 0.5;
+}
+
+#category-list li.dragging {
+  opacity: 0.5;
+}
+
 /* Категории */
 .categories {
   display: flex;
