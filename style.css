@@ -126,8 +126,17 @@ li.dragging {
   color: white;
 }
 
+#toggle-controls {
+  background: #2a2a2a;
+}
+
+#toggle-controls:hover {
+  background: #444;
+}
+
 #add-category,
-#delete-category {
+#delete-category,
+#toggle-controls {
   padding: 10px 16px;
   font-size: 15px;
   font-weight: 500;
@@ -170,6 +179,59 @@ li.dragging {
 
 #delete-category:hover {
   background: #e53935;
+}
+
+#category-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-arrows button {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.category-arrows button:hover {
+  color: #fff;
+}
+
+.category-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.category-controls button {
+  background: #2a2a2a;
+  color: #ddd;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 14px;
+}
+
+.category-controls button:hover {
+  background: #444;
+}
+
+li.selected {
+  outline: 2px solid #4caf50;
+  background-color: #2a2a2a;
+  border-radius: 2px;
+  outline-offset: 4px;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  display: none;
 }
 
 /* Модалки */
@@ -385,7 +447,8 @@ h1 {
 }
 
 #add-category,
-#delete-category {
+#delete-category,
+#toggle-controls {
   width: 100%;
   padding: 10px;
 }
@@ -417,4 +480,42 @@ h1 {
     margin: 1rem;
     padding: 1rem;
   }
+}
+
+/* Контейнер кастомной галочки */
+.custom-checkbox {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+/* Галочка (псевдоэлемент) */
+.custom-checkbox::after {
+  content: "✔";
+  color: #0f0;
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Активное состояние, когда задача выполнена */
+li.done .custom-checkbox {
+  border-color: #4caf50;
+  background-color: #2e7d32;
+}
+
+/* Галочка появляется */
+li.done .custom-checkbox::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
 }

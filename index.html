@@ -10,9 +10,14 @@
     <main class="container">
       <div class="categories">
         <ul id="category-list"></ul>
-        <div class="category-buttons">
-          <button id="add-category">Добавить</button>
-          <button id="delete-category">Удалить</button>
+        <div class="category-header">
+          <button id="toggle-controls">✏️ Редактировать</button>
+        </div>
+        <div class="category-controls hidden">
+          <button id="add-category">➕ Добавить</button>
+          <button id="delete-category">🗑️ Удалить</button>
+          <button id="move-up" data-no-deselect>🔼 Вверх</button>
+          <button id="move-down" data-no-deselect>🔽 Вниз</button>
         </div>
       </div>
 

@@ -5,7 +5,7 @@ export function createTaskElement(task, index) {
   li.dataset.index = index;
 
   li.innerHTML = `
-    <label class="checkbox-wrapper">
+    <div class="checkbox-wrapper">
       <input 
         type="checkbox" 
         ${task.done ? "checked" : ""} 
@@ -14,7 +14,7 @@ export function createTaskElement(task, index) {
       />
       <span class="custom-checkbox"></span>
       <span class="task-text">${task.text}</span>
-    </label>
+    </div>
     <button data-action="delete" data-index="${index}">✖</button>
   `;
 

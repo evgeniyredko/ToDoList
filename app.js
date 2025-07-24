@@ -33,15 +33,28 @@ form.addEventListener("submit", (e) => {
 list.addEventListener("click", (e) => {
   const index = e.target.dataset.index;
   const action = e.target.dataset.action;
+
   if (index !== undefined && action && currentCategory) {
-    if (action === "delete") tasksByCategory[currentCategory].splice(index, 1);
+    if (action === "delete") {
+      tasksByCategory[currentCategory].splice(index, 1);
+    }
+
     if (action === "toggle") {
       tasksByCategory[currentCategory][index].done =
         !tasksByCategory[currentCategory][index].done;
     }
+
     saveTasks(tasksByCategory);
     renderTasks();
+    return; // 🔹 если это действие — не идём дальше
   }
+
+  // --- 🔽 Выделение задачи по клику (если это не кнопка)
+  const li = e.target.closest("li");
+  if (!li) return;
+
+  li.classList.add("selected");
+  selectedTaskIndex = parseInt(li.dataset.index);
 });
 
 // Выбор категории
@@ -62,6 +75,7 @@ function renderTasks() {
   const tasks = tasksByCategory[currentCategory] || [];
   tasks.forEach((task, i) => {
     const el = createTaskElement(task, i);
+    el.dataset.index = i;
     list.appendChild(el);
   });
 }
@@ -118,6 +132,15 @@ function renderCategories() {
     categoryList.appendChild(li);
   });
 }
+
+categoryList.addEventListener("click", (e) => {
+  const selected = e.target.dataset.category;
+  if (selected) {
+    currentCategory = selected;
+    renderTasks();
+    renderCategories();
+  }
+});
 
 let draggedCategoryIndex = null;
 
@@ -258,6 +281,70 @@ cancelDeleteBtn.addEventListener("click", () => {
   categoryToDelete = null;
 });
 
+document.getElementById("move-up").addEventListener("click", () => {
+  if (selectedTaskIndex !== null) {
+    moveTask("up");
+  } else {
+    moveCategory("up");
+  }
+});
+
+document.getElementById("move-down").addEventListener("click", () => {
+  if (selectedTaskIndex !== null) {
+    moveTask("down");
+  } else {
+    moveCategory("down");
+  }
+});
+
+let selectedTaskIndex = null;
+
+function moveTask(direction) {
+  const tasks = tasksByCategory[currentCategory];
+  const i = selectedTaskIndex;
+
+  if (i === null || i < 0 || i >= tasks.length) return;
+
+  if (direction === "up" && i > 0) {
+    [tasks[i - 1], tasks[i]] = [tasks[i], tasks[i - 1]];
+    selectedTaskIndex--;
+  } else if (direction === "down" && i < tasks.length - 1) {
+    [tasks[i], tasks[i + 1]] = [tasks[i + 1], tasks[i]];
+    selectedTaskIndex++;
+  } else {
+    return;
+  }
+
+  saveTasks(tasksByCategory);
+  renderTasks();
+
+  // повторно выделяем
+  const newLi = list.querySelector(`li[data-index="${selectedTaskIndex}"]`);
+  if (newLi) newLi.classList.add("selected");
+}
+
+function moveCategory(direction) {
+  const keys = Object.keys(tasksByCategory);
+  const index = keys.indexOf(currentCategory);
+
+  if (direction === "up" && index > 0) {
+    [keys[index - 1], keys[index]] = [keys[index], keys[index - 1]];
+  } else if (direction === "down" && index < keys.length - 1) {
+    [keys[index], keys[index + 1]] = [keys[index + 1], keys[index]];
+  } else {
+    return;
+  }
+
+  const newTasksByCategory = {};
+  keys.forEach((key) => {
+    newTasksByCategory[key] = tasksByCategory[key];
+  });
+
+  tasksByCategory = newTasksByCategory;
+  saveTasks(tasksByCategory);
+  renderCategories();
+}
+
 // Закрытие по клику на фон (удаление)
 modal.addEventListener("click", (e) => {
   if (e.target === modal) {
@@ -329,4 +416,43 @@ modalRename.addEventListener("click", (e) => {
   if (e.target === modalRename) {
     modalRename.classList.add("hidden");
   }
+});
+
+document.addEventListener("click", (e) => {
+  const clickedInsideTask = e.target.closest("#task-list");
+  const preventDeselect = e.target.closest("[data-no-deselect]");
+
+  if (!clickedInsideTask && !preventDeselect) {
+    list
+      .querySelectorAll("li")
+      .forEach((el) => el.classList.remove("selected"));
+    selectedTaskIndex = null;
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("custom-checkbox")) {
+    const li = e.target.closest("li");
+    const index = li?.dataset.index;
+
+    if (index !== undefined && currentCategory) {
+      tasksByCategory[currentCategory][index].done =
+        !tasksByCategory[currentCategory][index].done;
+
+      saveTasks(tasksByCategory);
+      renderTasks();
+    }
+  }
+});
+
+const toggleBtn = document.getElementById("toggle-controls");
+const controls = document.querySelector(".category-controls");
+
+let controlsVisible = false;
+
+toggleBtn.addEventListener("click", () => {
+  controlsVisible = !controlsVisible;
+
+  controls.classList.toggle("hidden", !controlsVisible);
+  toggleBtn.textContent = controlsVisible ? "❌ Скрыть" : "✏️ Редактировать";
 });
