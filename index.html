@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Мой ToDo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <div class="categories">
+        <ul id="category-list"></ul>
+        <div class="category-buttons">
+          <button id="add-category">Добавить</button>
+          <button id="delete-category">Удалить</button>
+        </div>
+      </div>
+
+      <div class="category-name">
+        <h1 id="current-title">Мой список дел</h1>
+        <button id="rename-button">✏️</button>
+      </div>
+
+      <form id="task-form">
+        <input
+          type="text"
+          id="task-input"
+          placeholder="Добавить задачу..."
+          required
+        />
+        <button type="submit">+</button>
+      </form>
+      <ul id="task-list"></ul>
+    </main>
+
+    <script type="module" src="app.js"></script>
+
+    <div id="modal-create" class="modal hidden">
+      <div class="modal-content">
+        <p>Введите название новой категории:</p>
+        <input
+          type="text"
+          id="new-category-name"
+          placeholder="Например: Покупки"
+        />
+        <div style="margin-top: 1rem">
+          <button id="confirm-create">Создать</button>
+          <button id="cancel-create">Отмена</button>
+        </div>
+      </div>
+    </div>
+    <div id="modal" class="modal hidden">
+      <div class="modal-content">
+        <p id="modal-text">Вы точно хотите удалить категорию?</p>
+        <button id="confirm-delete">Удалить</button>
+        <button id="cancel-delete">Отмена</button>
+      </div>
+    </div>
+    <div id="modal-rename" class="modal hidden">
+      <div class="modal-content">
+        <p>Новое название категории:</p>
+        <input
+          type="text"
+          id="rename-category-name"
+          placeholder="Введите новое имя"
+        />
+        <div style="margin-top: 1rem">
+          <button id="confirm-rename">Переименовать</button>
+          <button id="cancel-rename">Отмена</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+  </body>
+</html>
