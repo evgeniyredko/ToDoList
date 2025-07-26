@@ -27,26 +27,18 @@ ul {
 
 h1 {
   margin: 0;
+  font-size: 1.4rem;
+  text-align: center;
 }
 
 .container {
   background: var(--accent);
   color: var(--fg);
-  margin-inline: auto;
-  border-radius: 12px;
-  padding: 2rem;
   margin: 3rem auto;
+  padding: 2rem;
   max-width: 500px;
+  border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-input,
-textarea,
-select {
-  background: var(--input-bg);
-  color: var(--input-fg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
 }
 
 form {
@@ -54,10 +46,18 @@ form {
   gap: 10px;
 }
 
+input,
+textarea,
+select,
+#new-category-name,
 #task-input {
-  flex: 1;
+  background: var(--input-bg);
+  color: var(--input-fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
   padding: 10px;
   font-size: 1rem;
+  width: 100%;
 }
 
 button {
@@ -74,6 +74,7 @@ button:hover {
   background: #333;
 }
 
+/* Задачи */
 li {
   display: flex;
   justify-content: space-between;
@@ -90,19 +91,21 @@ li:not(.dragging):hover {
   background-color: #1e1e1e;
 }
 
-li.dragging {
+li.dragging,
+#category-list li.dragging {
   opacity: 0.5;
 }
 
-#category-list li.dragging {
-  opacity: 0.5;
+li.selected {
+  outline: 2px solid #4caf50;
+  background-color: #2a2a2a;
+  border-radius: 2px;
+  outline-offset: 4px;
 }
 
 /* Категории */
 .categories {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
   flex-direction: column;
   gap: 8px;
   align-items: stretch;
@@ -110,34 +113,37 @@ li.dragging {
 
 #category-list {
   display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
   flex-direction: column;
 }
 
 #category-list li {
-  padding: 6px 12px;
+  padding: 8px 12px;
   border-radius: 6px;
   background: #222;
   color: #ddd;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  text-align: center;
+  flex-grow: 1;
 }
 
 #category-list li.active {
-  background: #333;
-  color: white;
-}
-
-#toggle-controls {
-  background: #2a2a2a;
-}
-
-#toggle-controls:hover {
   background: #444;
+  color: white;
 }
 
 #add-category,
 #delete-category,
 #toggle-controls {
-  padding: 10px 16px;
+  padding: 10px;
+  width: 100%;
   font-size: 15px;
   font-weight: 500;
   border-radius: 6px;
@@ -150,42 +156,26 @@ li.dragging {
 }
 
 #add-category {
-  background: #2e7d32; /* тёмно-зелёный */
+  background: #2e7d32;
   color: #fff;
 }
-
 #add-category:hover {
   background: #388e3c;
 }
 
-.category-name {
-  display: flex;
-  justify-self: center;
-  margin-block: 40px 20px;
-  align-items: center;
-}
-
-#rename-button {
-  margin-left: 15px;
-  padding-block: 5px;
-  font-size: 14px;
-  display: block;
-}
-
 #delete-category {
-  background: #c62828; /* тёмно-красный */
+  background: #c62828;
   color: #fff;
 }
-
 #delete-category:hover {
   background: #e53935;
 }
 
-#category-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+#toggle-controls {
+  background: #2a2a2a;
+}
+#toggle-controls:hover {
+  background: #444;
 }
 
 .category-arrows button {
@@ -196,7 +186,6 @@ li.dragging {
   cursor: pointer;
   padding: 0 2px;
 }
-
 .category-arrows button:hover {
   color: #fff;
 }
@@ -207,7 +196,6 @@ li.dragging {
   gap: 8px;
   margin-top: 1rem;
 }
-
 .category-controls button {
   background: #2a2a2a;
   color: #ddd;
@@ -216,22 +204,59 @@ li.dragging {
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
-  font-size: 14px;
+  font-size: 15px;
 }
-
 .category-controls button:hover {
   background: #444;
 }
 
-li.selected {
-  outline: 2px solid #4caf50;
-  background-color: #2a2a2a;
-  border-radius: 2px;
-  outline-offset: 4px;
+.category-name {
+  display: flex;
+  margin-block: 30px 20px;
+  gap: 15px;
+  justify-content: center;
 }
 
+/* Кастомный чекбокс */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  flex-grow: 1;
+}
 .checkbox-wrapper input[type="checkbox"] {
   display: none;
+}
+.custom-checkbox {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.custom-checkbox::after {
+  content: "✔";
+  color: #0f0;
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+li.done .custom-checkbox {
+  border-color: #4caf50;
+  background-color: #2e7d32;
+}
+li.done .custom-checkbox::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
 }
 
 /* Модалки */
@@ -247,32 +272,20 @@ li.selected {
   align-items: center;
   z-index: 1000;
 }
-
 .modal-content {
   background: var(--accent);
   color: var(--fg);
-  padding: 20px;
+  padding: 1rem;
   border-radius: 8px;
-  min-width: 280px;
-  max-width: 400px;
+  width: 90%;
+  max-width: 320px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.2s ease-out;
   text-align: center;
 }
-
 .hidden {
   display: none;
 }
-
-#new-category-name {
-  width: 100%;
-  padding: 8px;
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 #confirm-delete {
   background: #ffdddd;
   border: none;
@@ -282,13 +295,52 @@ li.selected {
   cursor: pointer;
   border-radius: 4px;
 }
-
 #cancel-delete {
   background: #eee;
   border: none;
   padding: 8px 16px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+/* Toast */
+#toast-container {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.3s ease-out forwards;
+  min-width: 220px;
+  max-width: 360px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.toast-success {
+  background-color: #4caf50;
+}
+.toast-error {
+  background-color: #f44336;
+}
+.toast-info {
+  background-color: #2196f3;
 }
 
 /* Анимации */
@@ -302,7 +354,6 @@ li.selected {
     opacity: 1;
   }
 }
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -313,7 +364,6 @@ li.selected {
     transform: translateY(0);
   }
 }
-
 @keyframes fadeOutDown {
   from {
     opacity: 0.95;
@@ -325,197 +375,10 @@ li.selected {
   }
 }
 
-/* Toast-сообщения */
-#toast-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-}
-
-.toast {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border-radius: 6px;
-  color: white;
-  font-size: 14px;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.3s ease-out forwards;
-  min-width: 220px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.toast-success {
-  background-color: #4caf50;
-}
-
-.toast-error {
-  background-color: #f44336;
-}
-
-.toast-info {
-  background-color: #2196f3;
-}
-
-.checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  flex-grow: 1;
-}
-
-.checkbox-wrapper input[type="checkbox"] {
-  display: none;
-}
-
-.custom-checkbox {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #888;
-  border-radius: 4px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.checkbox-wrapper input[type="checkbox"]:checked + .custom-checkbox::after {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 0px;
-  width: 6px;
-  height: 12px;
-  border: solid #4caf50;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-#task-list {
-  margin-left: 5px;
-}
-
-.category-buttons {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-}
-
-h1 {
-  font-size: 1.4rem;
-  text-align: center;
-}
-
-#task-input {
-  font-size: 1rem;
-  padding: 10px;
-  width: 100%;
-}
-
-.categories {
-  flex-direction: column;
-  gap: 8px;
-  align-items: stretch;
-}
-
-#category-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-
-#category-list li {
-  flex-grow: 1;
-  text-align: center;
-  padding: 8px;
-  background: #222;
-  color: #ddd;
-  width: fit-content;
-}
-
-#category-list li.active {
-  background: #444;
-  color: white;
-}
-
-#add-category,
-#delete-category,
-#toggle-controls {
-  width: 100%;
-  padding: 10px;
-}
-
-.modal-content {
-  width: 90%;
-  max-width: 320px;
-  padding: 1rem;
-}
-
-#toast-container {
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  padding: 0 1rem;
-  box-sizing: border-box;
-  align-items: center;
-}
-
-.toast {
-  width: 100%;
-  max-width: 360px;
-  font-size: 0.9rem;
-}
-
+/* Адаптив */
 @media (max-width: 530px) {
   .container {
     margin: 1rem;
     padding: 1rem;
   }
-}
-
-/* Контейнер кастомной галочки */
-.custom-checkbox {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  margin-right: 10px;
-  position: relative;
-  cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s;
-}
-
-/* Галочка (псевдоэлемент) */
-.custom-checkbox::after {
-  content: "✔";
-  color: #0f0;
-  font-size: 14px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-/* Активное состояние, когда задача выполнена */
-li.done .custom-checkbox {
-  border-color: #4caf50;
-  background-color: #2e7d32;
-}
-
-/* Галочка появляется */
-li.done .custom-checkbox::after {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
 }
